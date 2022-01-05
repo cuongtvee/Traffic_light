@@ -4,18 +4,18 @@ import time
 import argparse
 import numpy as np
 
-from utils.detector import Detector
+from detector.detector import Detector
 from utils.license_plate_general import get_loader, perspective_transform, is_turn_on, get_traffic_light_image, \
                                         drop_cls, crop_box, make_dir, ioa_batch, get_vehicle_license_plate_pair, \
                                         convert_boxes_to_ratio, enhance_contrast, get_value, get_specific_classes
 from utils.sort import Sort
 
 
-def run(vehicle_config, license_plate_config, character_config, save_dir, visualize, save_img): 
+def run(vehicle_config, character_config, save_dir, visualize, save_img): 
     vehicle_detector = Detector(vehicle_config)
     character_detector = Detector(character_config)
 
-    license_plate_tracker = Sort(license_plate_config)
+    license_plate_tracker = Sort(vehicle_config)
 
     dataset, video_name = get_loader(vehicle_config)                      ## cant not load camera
     print("Load video: ", video_name)
@@ -62,9 +62,8 @@ def run(vehicle_config, license_plate_config, character_config, save_dir, visual
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--vehicle_config', type=str, default= r'my_models\vehicle_config.yaml', help ='path to config file')
-    parser.add_argument('--license_plate_config', type=str, default= r'my_models\license_plate_config.yaml', help ='path to config file')
-    parser.add_argument('--character_config', type=str, default= r'my_models\license_plate_config.yaml', help ='path to config file')
+    parser.add_argument('--vehicle_config', type=str, default= r'config\vehicle_plate_config.yaml', help ='path to config file')
+    parser.add_argument('--character_config', type=str, default= r'config\character_config.yaml', help ='path to config file')
     parser.add_argument('--save_dir', type=str, default= r'output', help='save result in this dir')
     parser.add_argument('--visualize', action='store_true', help='visualize video image')
     parser.add_argument('--save_img', action='store_true', help='save image')
