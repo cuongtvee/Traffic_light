@@ -1,7 +1,7 @@
 import yaml
-from utils.license_plate_general import load_model, preprocess_image, get_boxes, visualize_img
-from utils.general import non_max_suppression
-from utils.general import check_yaml
+from utils.my_general import load_model, preprocess_image, get_boxes, visualize_img
+from utils.general import non_max_suppression, check_yaml
+
 
 class Detector:
     def __init__(self, config_path):

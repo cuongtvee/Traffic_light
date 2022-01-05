@@ -5,15 +5,19 @@ import argparse
 import numpy as np
 
 from detector.detector import Detector
-from utils.license_plate_general import get_loader, perspective_transform, is_turn_on, get_traffic_light_image, \
-                                        drop_cls, crop_box, make_dir, ioa_batch, get_vehicle_license_plate_pair, \
-                                        convert_boxes_to_ratio, enhance_contrast, get_value, get_specific_classes
+from utils.my_general import get_specific_classes, get_loader, make_dir
+
+from utils.vehicle_plate import get_vehicle_license_plate_pair
+
+from traffic_light_detector.traffic_light_detector import TrafficLightDetector
 from utils.sort import Sort
 
 
-def run(vehicle_config, character_config, save_dir, visualize, save_img): 
+def run(vehicle_config, character_config, traffic_light_config, save_dir, visualize, save_img): 
     vehicle_detector = Detector(vehicle_config)
     character_detector = Detector(character_config)
+
+    #traffic_light_detector = TrafficLightDetector(traffic_light_config)
 
     license_plate_tracker = Sort(vehicle_config)
 
@@ -24,8 +28,11 @@ def run(vehicle_config, character_config, save_dir, visualize, save_img):
         save_dir = os.path.join(save_dir, video_name)
         make_dir(save_dir)
 
+    original_imgsz =  dataset.get_imgsz()
+
     for _, image, _, count in dataset:
         start_time = time.time()
+        cv2.imwrite("test.png", image)
         vehicle_boxes = vehicle_detector.detect(image) ## get all classes
         
         car_boxes = get_specific_classes(vehicle_boxes, cls = [0, 1, 4, 5, 6, 7])
@@ -33,10 +40,10 @@ def run(vehicle_config, character_config, save_dir, visualize, save_img):
 
         vehicle_license_plate_in_pairs = get_vehicle_license_plate_pair(car_boxes, license_plate_boxes)    ## pair ([vehicle, plate], ..., [vehicle, plate])
 
-        red_light_image, yellow_light_image, green_light_image = get_traffic_light_image(image)
-        traffic_light = [is_turn_on(red_light_image), is_turn_on(yellow_light_image), is_turn_on(green_light_image)]    ## true is turn on, false is turn off
+        # red_light_image, yellow_light_image, green_light_image = get_traffic_light_image(image)
+        # traffic_light = [is_turn_on(red_light_image), is_turn_on(yellow_light_image), is_turn_on(green_light_image)]    ## true is turn on, false is turn off
 
-        print(traffic_light)
+        # print(traffic_light)
         # non_cls_boxes = drop_cls(boxes)
         # tracking_boxes = license_plate_tracker.update(non_cls_boxes)
             
@@ -64,6 +71,7 @@ def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--vehicle_config', type=str, default= r'config\vehicle_plate_config.yaml', help ='path to config file')
     parser.add_argument('--character_config', type=str, default= r'config\character_config.yaml', help ='path to config file')
+    parser.add_argument('--traffic_light_config', type=str, default= r'config\traffic_light_config.yaml', help ='path to config file')
     parser.add_argument('--save_dir', type=str, default= r'output', help='save result in this dir')
     parser.add_argument('--visualize', action='store_true', help='visualize video image')
     parser.add_argument('--save_img', action='store_true', help='save image')
