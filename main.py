@@ -16,23 +16,23 @@ from utils.sort import Sort
 def run(vehicle_config, character_config, traffic_light_config, save_dir, visualize, save_img): 
     vehicle_detector = Detector(vehicle_config)
     character_detector = Detector(character_config)
-
-    #traffic_light_detector = TrafficLightDetector(traffic_light_config)
-
     license_plate_tracker = Sort(vehicle_config)
 
     dataset, video_name = get_loader(vehicle_config)                      ## cant not load camera
+    original_imgsz =  dataset.get_imgsz()
+
+    traffic_light_detector = TrafficLightDetector(traffic_light_config, original_imgsz)
     print("Load video: ", video_name)
 
     if save_img:
         save_dir = os.path.join(save_dir, video_name)
         make_dir(save_dir)
 
-    original_imgsz =  dataset.get_imgsz()
+    
 
     for _, image, _, count in dataset:
         start_time = time.time()
-        cv2.imwrite("test.png", image)
+
         vehicle_boxes = vehicle_detector.detect(image) ## get all classes
         
         car_boxes = get_specific_classes(vehicle_boxes, cls = [0, 1, 4, 5, 6, 7])
@@ -40,8 +40,7 @@ def run(vehicle_config, character_config, traffic_light_config, save_dir, visual
 
         vehicle_license_plate_in_pairs = get_vehicle_license_plate_pair(car_boxes, license_plate_boxes)    ## pair ([vehicle, plate], ..., [vehicle, plate])
 
-        # red_light_image, yellow_light_image, green_light_image = get_traffic_light_image(image)
-        # traffic_light = [is_turn_on(red_light_image), is_turn_on(yellow_light_image), is_turn_on(green_light_image)]    ## true is turn on, false is turn off
+        result_traffic_light = traffic_light_detector.detect(image)
 
         # print(traffic_light)
         # non_cls_boxes = drop_cls(boxes)
@@ -56,7 +55,7 @@ def run(vehicle_config, character_config, traffic_light_config, save_dir, visual
 
             # image = vehicle_detector.visualize(image, car_boxes, using_tracking = False)
             # image = vehicle_detector.visualize(image, license_plate_boxes, using_tracking = False)
-
+            image = traffic_light_detector.visualize(image, result_traffic_light)
             result_img = cv2.resize(image, (1280, 720))
             cv2.imshow("Result", result_img)
             if cv2.waitKey(1) == ord('q'):

@@ -9,7 +9,7 @@ agnostic_nms : False
 device : 'cuda'
 auto : False 
 stride : 16
-source : 'video\38.h264'
+source : 'video\700.h264'
 line_thickness : 3
 line_size : 2
 hide_confidence : False
