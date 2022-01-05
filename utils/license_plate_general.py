@@ -8,7 +8,7 @@ from models.experimental import attempt_load
 from utils.general import  scale_coords, check_yaml
 from utils.augmentations import letterbox
 from utils.datasets import LoadImages
-from utils.class_config import CHARACTER_CLASS
+# from utils.class_config import CHARACTER_CLASS
 
 def load_model(path, train = False):
     model = attempt_load(path, map_location='cuda')  # load FP32 model

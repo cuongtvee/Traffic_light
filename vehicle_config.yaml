@@ -1,0 +1,22 @@
+model_path : 'best.pt'
+imgsz : 1280
+conf_thres : 0.7
+iou_thres : 0.45
+max_det : 1000
+class_name : ["car", "truck", "plate", "long_plate", "motorbike", "bus", "van", "bagac"]
+color_map : [[255, 0 ,0], [255, 255 ,0], [125, 0, 100], [200, 100, 50], [100, 200, 50], [50, 150, 200], [150, 0, 200], [255, 155, 70]]
+agnostic_nms : False
+device : 'cuda'
+auto : False 
+stride : 16
+source : 'video\38.h264'
+line_thickness : 3
+line_size : 2
+hide_confidence : False
+
+
+## Sort
+max_age : 2
+min_hits : 3
+iou_threshold : 0.3
+
